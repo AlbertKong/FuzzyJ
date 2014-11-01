@@ -1943,6 +1943,97 @@ public class FuzzyValue implements java.lang.Cloneable, Serializable
     
     return result.toString();
   }
+  
+  /**
+   * The following new types of modifiers can best be described as 'relative' rather than 'absolute' modifiers, or as 'auto-modifiers' 
+   * All existing modifiers so far are absolute. For example, 'very p', 'more_or_less q' etc. 
+   * It allows new rules of the type 'if x is X then increase y by dy'
+   * Where 'y' may have already been defined in absolute terms by an initial assertion or as a consequence of the 
+   * firing of a rule that is more salient, and 'dy' is the change in 'y' required.
+   * 
+   * These rules can perhaps be described as 'first order autoregressive' rules.
+   * An autoregressive model is one where the output is a function of itself (auto) in a regressed (or previous) state. 
+   * The term 'first order' is used to indicate that the the previous state considered is only the last state 
+   * and not any other further back in time.    
+   * 
+   * Because these modifiers are autoregressive they function on the value itself (and are therefore here in the fuzzyValue class)
+   * rather than on its fuzzySet assignment (and are therefore not in the fuzzySet class).  
+   * 
+   * Autoregressive rules could have been described in absolute terms before, as follow, so it is not additional functionality but 
+   * simply to make this functionality easier to implement:
+   * 
+   * If x is X and y is Y1 then y is Y1'
+   * if x is X and y is Y2 then y is Y2'
+   * if x is X and y is Y3 then y is Y3'                        
+   *                .         
+   *                .         
+   *                . 
+   * if x is X and y is Yn then y is Yn'
+   * 
+   * Where Y1,Y2,..Yn are all the possible values of Y,  and Y1',Y2',...Yn' are the increases required, i.e.,  Y1+dY,Y2+dY,...,Yn+dY
+   * This can now be described as one rule:
+   * 
+   * 'if x is X then increase y by dy' 
+   * 
+   * 
+   * Because of its 'auto' nature it cannot be implemented as just an additional modifier sub-class.  And would                
+   * require a new syntax for parsing to be implemented for higher level rule parsing (Jess) usage if desired.  
+   *   
+   */
+  
+  /**
+   * The increase modifier, shifts the fuzzy set to the right by the percentage of the universe of discourse (UoD)
+   * given as an argument.  Those points that move out of range of the UoD after shifting are discarded
+   * The remaining set is adjusted to maintain the same scale that existed before the shift.
+   */
+  
+  public void increase(Double percent)
+  {
+	FuzzySet increasedValue=new FuzzySet();
+	Double range=this.fuzzyVariable.getMaxUOD()-this.getMinUOD();
+	Double increase=percent*range/100.0;
+	Double maxY=fuzzySet.getMaxY();
+	fuzzySet=fuzzySet.fuzzyNormalize();
+    for(int i=0; i<fuzzySet.size();++i)
+    {
+     SetPoint newPoint=new SetPoint();
+     Double oldX=fuzzySet.getPoint(i).getX();
+     if(oldX+increase<=this.fuzzyVariable.getMaxUOD())
+      {	 
+       newPoint.setX(oldX+increase);newPoint.setY(fuzzySet.getPoint(i).getY());
+       increasedValue.insertSetPoint(newPoint);
+      } 
+    } 
+    increasedValue=increasedValue.fuzzyScale(maxY);
+    this.fuzzySet=increasedValue;
+  }
+  
+  /**
+   * The decrease auto-modifier, shifts the fuzzy set to the left by the percentage of the universe of discourse (UoD)
+   * given as an argument.  Those point that move out of range of the UoD after shifting are discarded
+   * The remaining set is adjusted to maintain the same scale that existed before the shift.
+   */
+  
+  public void descrease(Double percent)
+  {
+	FuzzySet decreasedValue=new FuzzySet();
+	Double range=this.fuzzyVariable.getMaxUOD()-this.getMinUOD();
+	Double decrease=percent*range/100.0;
+	Double maxY=fuzzySet.getMaxY();
+	fuzzySet=fuzzySet.fuzzyNormalize();
+    for(int i=0; i<fuzzySet.size();++i)
+    {
+     SetPoint newPoint=new SetPoint();
+     Double oldX=fuzzySet.getPoint(i).getX();
+     if(oldX-decrease>=this.fuzzyVariable.getMinUOD())
+      {	 
+       newPoint.setX(oldX-decrease);newPoint.setY(fuzzySet.getPoint(i).getY());
+       decreasedValue.insertSetPoint(newPoint);
+      } 
+    } 
+    decreasedValue=decreasedValue.fuzzyScale(maxY);
+    this.fuzzySet=decreasedValue;
+  }  
 
 
 }
