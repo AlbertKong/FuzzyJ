@@ -1989,8 +1989,13 @@ public class FuzzyValue implements java.lang.Cloneable, Serializable
   
   public void increase(Double percent)
   {
+	Double range=null;  
 	FuzzySet increasedValue=new FuzzySet();
-	Double range=this.fuzzyVariable.getMaxUOD()-this.getMinUOD();
+	try
+	 {
+	  range=fuzzySet.weightedAverageDefuzzify(this.getMinUOD(), this.getMaxUOD())-this.getMinUOD();
+	 }
+	catch(Exception ex){}
 	Double increase=percent*range/100.0;
 	Double maxY=fuzzySet.getMaxY();
 	fuzzySet=fuzzySet.fuzzyNormalize();
@@ -2016,8 +2021,13 @@ public class FuzzyValue implements java.lang.Cloneable, Serializable
   
   public void descrease(Double percent)
   {
+    Double range=null;
 	FuzzySet decreasedValue=new FuzzySet();
-	Double range=this.fuzzyVariable.getMaxUOD()-this.getMinUOD();
+	try
+	 {
+	  range=fuzzySet.weightedAverageDefuzzify(this.getMinUOD(), this.getMaxUOD())-this.getMinUOD();
+	 }
+	catch(Exception ex){}
 	Double decrease=percent*range/100.0;
 	Double maxY=fuzzySet.getMaxY();
 	fuzzySet=fuzzySet.fuzzyNormalize();
