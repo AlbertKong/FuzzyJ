@@ -1947,13 +1947,13 @@ public class FuzzyValue implements java.lang.Cloneable, Serializable
   /**
    * The following new types of modifiers can best be described as 'relative' rather than 'absolute' modifiers, or as 'auto-modifiers' 
    * All existing modifiers so far are absolute. For example, 'very p', 'more_or_less q' etc. 
-   * It allows new rules of the type 'if x is X then increase y by dy'
-   * Where 'y' may have already been defined in absolute terms by an initial assertion or as a consequence of the 
-   * firing of a rule that is more salient, and 'dy' is the change in 'y' required.
+   * It allows new rules of the type 'if x is X then increase y by dY'
+   * Where 'y' may have already been defined in absolute terms as 'Y' by an initial assertion or as a consequence of the 
+   * firing of a rule that is more salient, and 'dY' is the change in 'y' required.
    * 
    * These rules can perhaps be described as 'first order autoregressive' rules.
    * An autoregressive model is one where the output is a function of itself (auto) in a regressed (or previous) state. 
-   * The term 'first order' is used to indicate that the the previous state considered is only the last state 
+   * The term 'first order' is used to indicate that the previous state considered is only the last state 
    * and not any other further back in time.    
    * 
    * Because these modifiers are autoregressive they function on the value itself (and are therefore here in the fuzzyValue class)
@@ -1973,7 +1973,7 @@ public class FuzzyValue implements java.lang.Cloneable, Serializable
    * Where Y1,Y2,..Yn are all the possible values of Y,  and Y1',Y2',...Yn' are the increases required, i.e.,  Y1+dY,Y2+dY,...,Yn+dY
    * This can now be described as one rule:
    * 
-   * 'if x is X then increase y by dy' 
+   * 'if x is X then increase y by dY' 
    * 
    * 
    * Because of its 'auto' nature it cannot be implemented as just an additional modifier sub-class.  And would                
@@ -1982,7 +1982,7 @@ public class FuzzyValue implements java.lang.Cloneable, Serializable
    */
   
   /**
-   * The increase modifier, shifts the fuzzy set to the right by the percentage of the universe of discourse (UoD)
+   * The increase modifier, shifts the fuzzy set to the right by the percentage its defuzzified value
    * given as an argument.  Those points that move out of range of the UoD after shifting are discarded
    * The remaining set is adjusted to maintain the same scale that existed before the shift.
    */
@@ -2014,7 +2014,7 @@ public class FuzzyValue implements java.lang.Cloneable, Serializable
   }
   
   /**
-   * The decrease auto-modifier, shifts the fuzzy set to the left by the percentage of the universe of discourse (UoD)
+   * The decrease auto-modifier, shifts the fuzzy set to the left by the percentage of its defuzzified value
    * given as an argument.  Those point that move out of range of the UoD after shifting are discarded
    * The remaining set is adjusted to maintain the same scale that existed before the shift.
    */
